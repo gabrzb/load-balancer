@@ -40,3 +40,7 @@ The sample backend also responds to `GET /health` with status `204`. If no backe
 go test ./...
 go vet ./...
 ```
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for the full terms.
