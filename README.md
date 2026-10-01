@@ -1,16 +1,16 @@
-# Balanceador de carga HTTP
+# HTTP Load Balancer
 
-Projeto de estudo em Go que recebe requisições na porta `8000` e as distribui entre backends HTTP em rodízio. Usa apenas a biblioteca padrão.
+A Go learning project that accepts requests on port `8000` and distributes them across HTTP backends in round-robin order. It uses only the standard library.
 
-O balanceador verifica a conexão com cada backend ao iniciar e a cada 20 segundos. Ele ignora os destinos indisponíveis, responde `503` quando nenhum está ativo e marca um destino como indisponível se o proxy falhar (`502` para essa requisição).
+The load balancer checks connectivity to each backend at startup and every 20 seconds. It skips unavailable backends, returns `503` when none are available, and marks a backend as unavailable if the proxy fails (returning `502` for that request).
 
-## Requisitos
+## Requirements
 
-- Go 1.26.1 ou superior.
+- Go 1.26.1 or later.
 
-## Executar
+## Run
 
-Em três terminais, a partir da raiz do projeto:
+From the project root, start the following commands in three separate terminals:
 
 ```sh
 go run ./backend 8081
@@ -24,30 +24,19 @@ go run ./backend 8082
 go run . http://localhost:8081 http://localhost:8082
 ```
 
-Consulte o balanceador algumas vezes:
+Send a few requests to the load balancer:
 
 ```sh
 curl http://localhost:8000/api/visits
 ```
 
-A resposta é um JSON como `{"instance":"8081","visits":1}`. O campo `instance` alterna entre `8081` e `8082`; cada processo mantém seu próprio contador em memória, que zera ao reiniciar.
+The response is JSON such as `{"instance":"8081","visits":1}`. The `instance` field alternates between `8081` and `8082`. Each process keeps its own in-memory counter, which resets when the process restarts.
 
-O backend de exemplo também responde a `GET /health` com status `204`. Se nenhum endereço for passado ao balanceador, ele usa `http://localhost:8080`. Se nenhuma porta for passada ao backend, ele escuta na porta `8080`.
+The sample backend also responds to `GET /health` with status `204`. If no backend address is provided to the load balancer, it uses `http://localhost:8080`. If no port is provided to the sample backend, it listens on port `8080`.
 
-## Verificar
+## Verify
 
 ```sh
 go test ./...
 go vet ./...
 ```
-
-## Desenvolvimento com Git
-
-Se o projeto fosse refeito desde o início, estes commits registrariam as etapas até chegar ao estado atual:
-
-| Etapa | Entrega | Commit |
-| --- | --- | --- |
-| 1 | `go.mod` | `first commit` |
-| 2 | API em `backend/`, com `/health`, `/api/visits` e teste | `feat: add sample HTTP backend` |
-| 3 | Proxy na porta 8000 e alternância entre destinos | `feat: balance requests across backends` |
-| 4 | Verificação de saúde, tratamento de falhas e testes do balanceador | `feat: handle unavailable backends` |
